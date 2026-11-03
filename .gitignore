@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs (Vite & PWA)
+dist/
+dist-ssr/
+
+# Compiled Android / Mobile binaries & keystores
+*.apk
+*.aab
+*.ap_
+*.dex
+*.keystore
+*.jks
+
+# Environment & local configuration
+.env
+.env.*
+!.env.example
+*.local
+local.properties
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

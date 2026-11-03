@@ -1,0 +1,619 @@
+:root {
+  --bg-black: #000000;
+  --text-white: #ffffff;
+  --text-dim: #9e9ea7;
+  --text-wheel-inactive: #35353a;
+
+  --pill-bg: #1e1e22;
+  --pill-border: #2c2c32;
+  --pill-active-bg: #292548;
+  --pill-active-border: #6c63d9;
+
+  --start-btn-bg: #3f3878;
+  --start-btn-border: rgba(171, 164, 255, 0.25);
+  --start-btn-text: #aba4ff;
+
+  --ambient-glow: rgba(65, 42, 136, 0.36);
+  --phase-accent: #8b80f9;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+[data-phase="PREPARE"] {
+  --ambient-glow: rgba(217, 119, 6, 0.28);
+  --phase-accent: #fbbf24;
+}
+
+[data-phase="ACTIVITY"] {
+  --ambient-glow: rgba(79, 70, 229, 0.36);
+  --phase-accent: #818cf8;
+}
+
+[data-phase="REST"] {
+  --ambient-glow: rgba(14, 165, 233, 0.28);
+  --phase-accent: #38bdf8;
+}
+
+[data-phase="COMPLETED"] {
+  --ambient-glow: rgba(124, 58, 237, 0.35);
+  --phase-accent: #a78bfa;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-black);
+  color: var(--text-white);
+  font-family: -apple-system, BlinkMacSystemFont, "One UI Sans", "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 440px;
+  height: 100dvh;
+  margin: 0 auto;
+  padding: calc(14px + var(--safe-top)) 20px calc(28px + var(--safe-bottom));
+  background: radial-gradient(
+    circle at 50% 48%,
+    var(--ambient-glow) 0%,
+    rgba(25, 16, 54, 0.14) 42%,
+    #000000 74%
+  );
+  transition: background 0.5s ease;
+}
+
+/* Top Bar Minimalista */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.app-subtle-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
+.icon-btn.is-muted {
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Views */
+.view {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 0;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.view.is-active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================
+   VIEW 1: SETUP MINIMALISTA (SAMSUNG STYLE)
+   ========================================== */
+.picker-stage {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.giant-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.picker-headers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.picker-col-label {
+  width: 120px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.picker-col-spacer {
+  width: 38px;
+}
+
+.giant-wheel-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 216px; /* 3 linhas de 72px */
+  position: relative;
+}
+
+.giant-wheel-col {
+  width: 120px;
+  height: 216px;
+  position: relative;
+}
+
+.giant-colon {
+  width: 38px;
+  text-align: center;
+  font-size: 3.3rem;
+  font-weight: 600;
+  color: var(--text-white);
+  line-height: 1;
+  transform: translateY(-3px);
+  pointer-events: none;
+}
+
+.wheel-scroller {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.wheel-scroller.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.wheel-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.wheel-spacer {
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.wheel-item {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: center;
+  font-size: 3.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-wheel-inactive);
+  transition: color 0.14s ease, transform 0.14s ease;
+}
+
+.wheel-item.is-active {
+  color: var(--text-white);
+  font-size: 3.55rem;
+  font-weight: 600;
+}
+
+/* As 3 Pílulas (Estilo Samsung 00:10:00 | 00:15:00 | 00:30:00) */
+.preset-pills-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.pills-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.param-pill {
+  flex: 1;
+  max-width: 118px;
+  height: 54px;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  border: 1.5px solid var(--pill-border);
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+
+.param-pill:active {
+  transform: scale(0.95);
+}
+
+.param-pill.is-selected {
+  background: var(--pill-active-bg);
+  border-color: var(--pill-active-border);
+}
+
+.param-pill.is-static {
+  cursor: default;
+}
+
+.param-pill.is-static:active {
+  transform: none;
+}
+
+.pill-title {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.param-pill.is-selected .pill-title {
+  color: #c7c2ff;
+}
+
+.pill-value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.total-caption {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botão Circular "Iniciar" (Estilo Samsung) */
+.bottom-action-area {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0 8px;
+}
+
+.btn-circle-start {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--start-btn-bg);
+  border: 1.5px solid var(--start-btn-border);
+  color: var(--start-btn-text);
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.btn-circle-start:active {
+  transform: scale(0.93);
+  background: #4b438c;
+}
+
+/* ==========================================
+   VIEW 2: EXECUÇÃO DO CRONÔMETRO
+   ========================================== */
+.timer-status-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.session-pill {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.session-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 260px;
+}
+
+.session-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: all 0.25s ease;
+}
+
+.session-dot.is-done {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.session-dot.is-current {
+  width: 18px;
+  background: var(--phase-accent);
+}
+
+.timer-ring-wrapper {
+  position: relative;
+  width: min(78vw, 296px);
+  height: min(78vw, 296px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-ring-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.timer-ring-progress {
+  stroke: var(--phase-accent);
+  transition: stroke 0.35s ease;
+}
+
+.timer-center-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.phase-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--phase-accent);
+  margin-bottom: 6px;
+}
+
+.timer-digits {
+  font-size: clamp(3.4rem, 14vw, 4.3rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-white);
+}
+
+.next-up-hint {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* Controles Minimalistas com Ícones */
+.timer-controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.timer-player-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+}
+
+.icon-circle-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.icon-circle-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.icon-circle-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-circle-lg {
+  width: 68px;
+  height: 68px;
+}
+
+.icon-circle-lg svg {
+  width: 24px;
+  height: 24px;
+}
+
+.hero-play-btn {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: var(--start-btn-bg);
+  border: 1.5px solid var(--start-btn-border);
+  color: var(--start-btn-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(63, 56, 120, 0.45);
+  transition: transform 0.14s ease, background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+}
+
+.hero-play-btn:active {
+  transform: scale(0.92);
+}
+
+.hero-play-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+.hero-play-btn .play-offset {
+  transform: translateX(1.5px);
+}
+
+.hero-play-btn.is-running {
+  background: rgba(244, 63, 94, 0.16);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fda4af;
+  box-shadow: 0 8px 28px rgba(244, 63, 94, 0.18);
+}
+
+.btn-end-cycle {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: transform 0.14s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-end-cycle:active {
+  transform: scale(0.95);
+  background: rgba(244, 63, 94, 0.14);
+  color: #fda4af;
+}
+
+.btn-end-cycle svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+/* ==========================================
+   VIEW 3: CONCLUSÃO MINIMALISTA
+   ========================================== */
+.complete-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.complete-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--phase-accent);
+}
+
+.complete-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.complete-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+}
+
+.complete-pills {
+  margin-bottom: 12px;
+}
+
+.complete-buttons-row {
+  gap: 36px;
+}

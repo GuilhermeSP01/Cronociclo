@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <title>Cronociclo</title>
+  </head>
+  <body>
+    <div id="app" class="app-shell" data-phase="IDLE">
+      <!-- Top Bar Minimalista -->
+      <header class="top-bar">
+        <span class="app-subtle-title">Cronociclo</span>
+        <button
+          id="btn-mute"
+          class="icon-btn"
+          type="button"
+          aria-label="Alternar som e vibração"
+          title="Som / Vibração"
+        >
+          <svg id="icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- VIEW 1: CONFIGURAÇÃO MINIMALISTA (ESTILO SAMSUNG) -->
+      <main id="view-setup" class="view is-active">
+        <!-- Roleta Gigante Central -->
+        <div class="picker-stage">
+          <!-- Roleta de Tempo (MM : SS) usada para Atividade e Descanso -->
+          <div id="picker-time-wrapper" class="giant-picker">
+            <div class="picker-headers">
+              <span class="picker-col-label">Minutos</span>
+              <span class="picker-col-spacer"></span>
+              <span class="picker-col-label">Segundos</span>
+            </div>
+            <div class="giant-wheel-row">
+              <div id="wheel-min" class="giant-wheel-col" aria-label="Minutos"></div>
+              <span class="giant-colon">:</span>
+              <div id="wheel-sec" class="giant-wheel-col" aria-label="Segundos"></div>
+            </div>
+          </div>
+
+          <!-- Roleta de Sessões (01 .. 99) usada quando a pílula Sessões está ativa -->
+          <div id="picker-sessions-wrapper" class="giant-picker hidden">
+            <div class="picker-headers">
+              <span class="picker-col-label">Sessões de Atividade</span>
+            </div>
+            <div class="giant-wheel-row">
+              <div id="wheel-sessions" class="giant-wheel-col" aria-label="Quantidade de sessões"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- As 3 Pílulas de Seleção (Atividade | Descanso | Sessões) -->
+        <div class="preset-pills-area">
+          <div class="pills-row" role="tablist" aria-label="Parâmetros do ciclo">
+            <button
+              id="pill-activity"
+              class="param-pill is-selected"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-mode="activity"
+            >
+              <span class="pill-title">Atividade</span>
+              <strong id="pill-val-activity" class="pill-value">00:45</strong>
+            </button>
+
+            <button
+              id="pill-rest"
+              class="param-pill"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-mode="rest"
+            >
+              <span class="pill-title">Descanso</span>
+              <strong id="pill-val-rest" class="pill-value">00:15</strong>
+            </button>
+
+            <button
+              id="pill-sessions"
+              class="param-pill"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-mode="sessions"
+            >
+              <span class="pill-title">Sessões</span>
+              <strong id="pill-val-sessions" class="pill-value">4x</strong>
+            </button>
+          </div>
+
+          <p class="total-caption">
+            Duração total: <span id="total-duration-display">03m 45s</span>
+          </p>
+        </div>
+
+        <!-- Botão Circular "Iniciar" (Estilo Samsung) -->
+        <div class="bottom-action-area">
+          <button id="btn-start" class="btn-circle-start" type="button">
+            Iniciar
+          </button>
+        </div>
+      </main>
+
+      <!-- VIEW 2: EXECUÇÃO DO CRONÔMETRO (TIMER) -->
+      <main id="view-timer" class="view">
+        <div class="timer-status-header">
+          <div id="session-pill" class="session-pill">Sessão 1 de 4</div>
+          <div id="session-dots" class="session-dots" aria-hidden="true"></div>
+        </div>
+
+        <div class="timer-ring-wrapper">
+          <svg class="timer-ring-svg" viewBox="0 0 280 280">
+            <circle
+              class="timer-ring-bg"
+              cx="140"
+              cy="140"
+              r="126"
+              fill="none"
+              stroke-width="6"
+            />
+            <circle
+              id="timer-ring-progress"
+              class="timer-ring-progress"
+              cx="140"
+              cy="140"
+              r="126"
+              fill="none"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </svg>
+
+          <div class="timer-center-content">
+            <span id="phase-badge" class="phase-badge">PREPARE-SE</span>
+            <div id="timer-digits" class="timer-digits" aria-live="polite">00:05</div>
+            <span id="next-up-hint" class="next-up-hint">Próximo: Atividade (00:45)</span>
+          </div>
+        </div>
+
+        <!-- Controles Minimalistas com Ícones -->
+        <div class="timer-controls">
+          <div class="timer-player-row">
+            <!-- Reiniciar Etapa -->
+            <button
+              id="btn-restart-phase"
+              class="icon-circle-btn"
+              type="button"
+              aria-label="Reiniciar etapa atual"
+              title="Reiniciar etapa"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+            </button>
+
+            <!-- Pausar / Retomar (Botão Principal Central) -->
+            <button
+              id="btn-pause-resume"
+              class="hero-play-btn"
+              type="button"
+              aria-label="Pausar ou retomar"
+              title="Pausar / Retomar"
+            >
+              <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="5" width="4" height="14" rx="1.5"></rect>
+                <rect x="14" y="5" width="4" height="14" rx="1.5"></rect>
+              </svg>
+              <svg id="icon-play" class="hidden" viewBox="0 0 24 24" fill="currentColor" class="play-offset">
+                <path d="M7 5.5v13a1 1 0 0 0 1.53.85l10.5-6.5a1 1 0 0 0 0-1.7l-10.5-6.5A1 1 0 0 0 7 5.5z"></path>
+              </svg>
+            </button>
+
+            <!-- Pular Etapa -->
+            <button
+              id="btn-skip-phase"
+              class="icon-circle-btn"
+              type="button"
+              aria-label="Pular etapa atual"
+              title="Pular etapa"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 4 15 12 5 20 5 4" fill="currentColor"></polygon>
+                <line x1="19" y1="5" x2="19" y2="19" stroke-width="2.4"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Botão Sutil para Encerrar Ciclo -->
+          <button
+            id="btn-reset-cycle"
+            class="btn-end-cycle"
+            type="button"
+            aria-label="Encerrar ciclo"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="6" width="12" height="12" rx="2.5"></rect>
+            </svg>
+            <span>Encerrar</span>
+          </button>
+        </div>
+      </main>
+
+      <!-- VIEW 3: CONCLUSÃO MINIMALISTA -->
+      <main id="view-complete" class="view">
+        <div class="complete-hero">
+          <span class="complete-badge">FINALIZADO</span>
+          <h2 class="complete-title">Ciclo Concluído</h2>
+          <p id="complete-summary-line" class="complete-subtitle">
+            4 sessões • 03m 45s no total
+          </p>
+        </div>
+
+        <div class="pills-row complete-pills">
+          <div class="param-pill is-static">
+            <span class="pill-title">Sessões</span>
+            <strong id="stat-sessions" class="pill-value">4</strong>
+          </div>
+          <div class="param-pill is-static">
+            <span class="pill-title">Atividade</span>
+            <strong id="stat-activity-time" class="pill-value">03:00</strong>
+          </div>
+          <div class="param-pill is-static">
+            <span class="pill-title">Total</span>
+            <strong id="stat-total-time" class="pill-value">03:45</strong>
+          </div>
+        </div>
+
+        <div class="bottom-action-area complete-buttons-row">
+          <button
+            id="btn-back-setup"
+            class="icon-circle-btn icon-circle-lg"
+            type="button"
+            aria-label="Ajustar tempos"
+            title="Ajustar tempos"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14"></line>
+              <line x1="4" y1="10" x2="4" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12" y2="3"></line>
+              <line x1="20" y1="21" x2="20" y2="16"></line>
+              <line x1="20" y1="12" x2="20" y2="3"></line>
+              <line x1="1" y1="14" x2="7" y2="14"></line>
+              <line x1="9" y1="8" x2="15" y2="8"></line>
+              <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
+          </button>
+
+          <button
+            id="btn-repeat-cycle"
+            class="hero-play-btn"
+            type="button"
+            aria-label="Repetir ciclo"
+            title="Repetir ciclo"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
