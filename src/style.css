@@ -617,3 +617,90 @@ body {
 .complete-buttons-row {
   gap: 36px;
 }
+
+/* ==========================================
+   MODO MINIATURA / PICTURE-IN-PICTURE (PiP)
+   ========================================== */
+body.is-pip .top-bar,
+body.is-pip .timer-controls,
+body.is-pip .session-dots,
+body.is-pip .next-up-hint,
+body.is-pip .complete-pills,
+body.is-pip .complete-buttons-row {
+  display: none !important;
+}
+
+body.is-pip .app-shell {
+  padding: 6px !important;
+  justify-content: center;
+}
+
+body.is-pip .view.is-active {
+  justify-content: center;
+  gap: 4px;
+}
+
+body.is-pip .timer-status-header {
+  margin-top: 0;
+  gap: 2px;
+}
+
+body.is-pip .session-pill {
+  font-size: clamp(0.65rem, 6.5vmin, 0.85rem);
+}
+
+body.is-pip .timer-ring-wrapper {
+  width: 82vmin;
+  height: 82vmin;
+}
+
+body.is-pip .phase-badge {
+  font-size: clamp(0.6rem, 6.5vmin, 0.8rem);
+  margin-bottom: 2px;
+}
+
+body.is-pip .timer-digits {
+  font-size: clamp(1.6rem, 23vmin, 3rem);
+}
+
+body.is-pip .complete-title {
+  font-size: clamp(1.1rem, 12vmin, 1.6rem);
+}
+
+body.is-pip .complete-subtitle {
+  font-size: clamp(0.7rem, 7vmin, 0.9rem);
+}
+
+@media (max-height: 340px) {
+  .top-bar,
+  .timer-controls,
+  .session-dots,
+  .next-up-hint,
+  .complete-pills,
+  .complete-buttons-row {
+    display: none !important;
+  }
+
+  .app-shell {
+    padding: 6px !important;
+    justify-content: center;
+  }
+
+  .view.is-active {
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .timer-status-header {
+    margin-top: 0;
+  }
+
+  .timer-ring-wrapper {
+    width: 82vmin;
+    height: 82vmin;
+  }
+
+  .timer-digits {
+    font-size: clamp(1.6rem, 23vmin, 3rem);
+  }
+}

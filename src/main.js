@@ -5,6 +5,7 @@ import { TimerEngine, PHASES } from './core/timerEngine.js';
 import { soundHaptics } from './services/soundHaptics.js';
 import { wakeLock } from './services/wakeLock.js';
 import { notifications } from './services/notifications.js';
+import { pipService } from './services/pip.js';
 
 const RING_RADIUS = 126;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -339,6 +340,7 @@ const timerEngine = new TimerEngine({
   },
 
   onComplete: ({ totalSessions, totalActivitySeconds, totalCycleSeconds }) => {
+    pipService.setTimerRunning(false);
     wakeLock.release();
     soundHaptics.triggerCycleComplete();
     notifications.notifyPhaseTransition(
@@ -361,6 +363,7 @@ async function startCycleExecution() {
   soundHaptics.unlockAudio();
   notifications.requestPermissions();
   await wakeLock.acquire();
+  pipService.setTimerRunning(true);
 
   showView(viewTimer, PHASES.PREPARE);
   timerEngine.start({
@@ -379,8 +382,10 @@ btnPauseResume.addEventListener('click', async () => {
   soundHaptics.unlockAudio();
   timerEngine.togglePause();
   if (timerEngine.isPaused) {
+    pipService.setTimerRunning(false);
     await wakeLock.release();
   } else {
+    pipService.setTimerRunning(true);
     await wakeLock.acquire();
   }
 });
@@ -397,6 +402,7 @@ btnSkipPhase.addEventListener('click', () => {
 
 btnResetCycle.addEventListener('click', async () => {
   soundHaptics.vibrateLight();
+  pipService.setTimerRunning(false);
   timerEngine.stop();
   await wakeLock.release();
   showView(viewSetup, PHASES.IDLE);
@@ -408,6 +414,7 @@ btnRepeatCycle.addEventListener('click', () => {
 });
 
 btnBackSetup.addEventListener('click', () => {
+  pipService.setTimerRunning(false);
   timerEngine.stop();
   showView(viewSetup, PHASES.IDLE);
   setParamMode(activeParamMode);
